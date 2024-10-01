@@ -1,4 +1,6 @@
-## Default Directory Structure
+## Структура репозитория
+
+Default Directory Structure
 
 ```
 ├── .cloud              # for storing cloud configuration files and templates (e.g. ARM, Terraform, etc)
@@ -13,13 +15,15 @@
 │   ├── labels.yaml
 │   └── workflows
 ├── .gitignore
-├── README.md
+├── README.md           # Описание проекта и команды
+├── checkpoints.md      # Основные этапы для достижения цели
 ├── code
 │   ├── datasets        # code for creating or getting datasets
 │   ├── deployment      # code for deploying models
 │   ├── features        # code for creating features
 │   └── models          # code for building and training models
-├── data                # directory is for consistent data placement. contents are gitignored by default.
+├── data                # directory is for consistent data placement. 
+│   │                   # По умолчанию все содержимое внесено в .gitignore
 │   ├── README.md
 │   ├── interim         # storing intermediate results (mostly for debugging)
 │   ├── processed       # storing transformed data used for reporting, modeling, etc
@@ -29,6 +33,7 @@
 │   ├── data            # documenting datasets, data profiles, behaviors, column definitions, etc
 │   ├── media           # storing images, videos, etc, needed for docs.
 │   ├── references      # for collecting and documenting external resources relevant to the project
+│   ├── workflow        # описание процесса работы Команды 22
 │   └── solution_architecture.md    # describe and diagram solution design and architecture
 ├── environments
 ├── notebooks

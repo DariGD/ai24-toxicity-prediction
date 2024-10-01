@@ -1,54 +1,54 @@
 # Использование меток
 
-To help us keep track of our work, we've also created a series of labels for the project. The label definitions are kept in the `.github/labels.yaml' file of the repository. The labels are designed to categorize our work and mark the status. You are encouraged to create your own labels as well, but it is recommended to use the included labels as prescribed so that they are consistent across projects and teams.
+Для удобства отслеживания нашей работы, мы создали набор меток для проекта. Определения меток хранятся в файле `.github/labels.yaml` репозитория. Метки предназначены для категоризации нашей работы и маркировки статуса. Создание собственных меток приветствуются, но рекомендуется использовать готовые, так как они согласованы между проектами и командами.
 
-## Метки для типа задачи
+## Метки типа задачи
 
-Issue type labels are automatically applied to Issues when created using the correct issue template. They make it easy for your team to see at a glance what type of work item a particular issue is. This also makes it easy to find all the various asks, experiments, and data work streams that are happening.
+Метки для типа задачи автоматически проставляются задачам (Issuse) при создании из соответствующего шаблона. Они облегчают понимание какого именно типа конкретная задача. Так же они облегчают поиск задач по типам работ.
 
 ### Ask
 
-This is applied by default to all Ask issues. By labeling all Ask issues, we can quickly see what high-level problems the team is trying to solve, which helps put the other work in context.
+Такая метка по умолчанию применяется ко всем задачам типа Ask. Помещая метку Ask на все задачи, мы можем быстро увидеть, какие высокоуровневые проблемы команда пытается решить, что помогает понимать контекст других задач.
 
 ### Explore
 
-This is applied by default to all Explore issues.
+Применяется по умолчанию к всем задачам типа Explore.
 
 ### Experiment
 
-This is applied by default to all Experiment issues. This makes it easy to keep track of all the experiment attempts that may be going on in parallel on your team.
+Применяется по умолчанию к всем задачам типа Experiment. Упрощает отслеживание экспериментов, которые могут выполняться параллельно в вашей команде.
 
 ### Data
 
-This is applied by default to all Data issues. There should be one Data issue for each version of a dataset. This makes it easy to keep track of which datasets are in flight, and who is working on them.
+Применяется по умолчанию к всем задачам типа Data. Для каждой версии датасета должна быть одна задача типа Data Creation или Data Acquisition. Это упрощает отслеживание наборов данных над которыми работает команда, и кто именно работает над ними.
 
 ### Model
 
-This is applied by default to all Model issues. This gives you an easy way to see which models have moved beyond the experimentation phase and into the build phase.
+Применяется по умолчанию к всем задачам типа Model. Это дает вам простой способ увидеть, какие модели перешли в фазу сборки.
 
 ### Deploy
 
-This label is used in conjunction with Model Issues and labels and is used to mark when a model issue has matured to the point of being ready to kick-off the deployment process.
+Эта метка используется в сочетании с метками и задачами типа Model, а используется для маркировки моделей, когда они достигли стадии готовности к запуску процесса развертывания.
 
 ### Communicate
 
-Label used for issues related to creating docs and reports.
+Метка для задач, связанных с документацией и отчетами.
 
-## Status Labels
+## Метки статуса
 
 ### succeeded
 
-Applied to experiment and model issues when they've met all acceptance criteria.
+Применяется к задачам типа Experiment и Model, когда они **прошли** все критерии приемки.
 
 ### failed
 
-Applied to experiment and model issues when they've failed acceptance criteria.
+Применяется к задачам типа Experiment и Model, когда они **не прошли** критерии приемки.
 
 ### on hold
 
-Sometimes, work gets deprioritized. Use this label to mark approaches that neither succeeded nor failed.
+Иногда приоритет работы меняется. Маркируйте этой меткой работу, которая пока не привела ни к успеху, ни к неудаче.
 
 
 ### blocked - need access
 
-Often in a data science project, you're blocked because you don't have access to something. This could be data, a compute environment, a deployment environment, etc. This happens so often that we created a label for it.
+Часто в проекте Data Science вы оказываетесь заблокированы из-за того, что у вас нет доступа к какой-либо ресурсу - к данным, к вычислительным ресурсам, к окружению развертывания и т.д. Такое происходит довольно часто, поэтому вот вам метка.
