@@ -27,4 +27,6 @@
 5) Сервис над готовыми моделями (до 01.04.2025)
 6) Эксперименты с DL (до 15.05.2025)
 
-Подробнее план см в [checkpoints.md](checkpoints.md)
+Подробнее план см. в [checkpoints.md](checkpoints.md)
+
+Описание процесса Команды 22 см. в [docs/workflow/REAMDE.md](docs/workflow/REAMDE.md)
