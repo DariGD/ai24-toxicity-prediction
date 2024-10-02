@@ -3,7 +3,7 @@
 > Отжатая и адаптированная версия [The Data Science Lifecycle Process](https://github.com/dslp/dslp/blob/main/README.md)
 
 
-![Team22 Workflow diagram](../media/Team22-workflow.png)
+![Team22 Workflow diagram](./media/Team22-workflow.png)
 
 ## Главные темы
 
