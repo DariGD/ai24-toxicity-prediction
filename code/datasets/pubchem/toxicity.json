@@ -1,0 +1,74 @@
+{
+    "Record": {
+        "RecordType": "CID",
+        "RecordNumber": 8003,
+        "RecordTitle": "Pentane",
+        "Section": [
+            {
+                "TOCHeading": "Toxicity",
+                "Description": "Toxicity information related to this compound, including routes of exposure, related symptoms, acute and chronic effects, and numerical measures of toxicity.",
+                "Section": [
+                    {
+                        "TOCHeading": "Toxicological Information",
+                        "Description": "This section provides toxicological and health effects information for the chemical.  It includes the likely routes of exposure (inhalation, ingestion, skin and eye contact), and the delayed, immediate, or chronic effects/symptoms from short- and long-term exposure, and the numerical measures of toxicity [e.g., acute toxicity estimates such as the LD50 (median lethal dose, the estimated amount of a chemical expected to kill 50% of test animals in a single dose)].  This section also includes information on whether the chemical is considered as a potential carcinogen according to authoritative sources such as the National Toxicology Program (NTP) Report on Carcinogens and the International agency for Research on Cancer (IARC) Monographs.",
+                        "Section": [
+                            {
+                                "TOCHeading": "Toxicity Data",
+                                "Description": "Numeric toxicity data for this compound, collected from multiple sources (including the NCI Investigational Drugs and Haz-Map).",
+                                "Information": [
+                                    {
+                                        "ReferenceNumber": 43,
+                                        "Value": {
+                                            "StringWithMarkup": [
+                                                {
+                                                    "String": "LC50 (rat) = 364,000mg/m3/4hr"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "ReferenceNumber": 107,
+                                        "Reference": [
+                                            "T14: Lewis RJ (1996). Sax's Dangerous Properties of Industrial Materials. 9th ed. Volumes 1-3. New York, NY: Van Nostrand Reinhold."
+                                        ],
+                                        "Value": {
+                                            "StringWithMarkup": [
+                                                {
+                                                    "String": "LD50: 446 mg/kg (Intravenous, Mouse) (T14)\n\nLC50: 364 g/m3 over 4 hours (Inhalation, Rat) (T14)"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "Reference": [
+            {
+                "ReferenceNumber": 43,
+                "SourceName": "Haz-Map, Information on Hazardous Chemicals and Occupational Diseases",
+                "SourceID": "hz107",
+                "Name": "n-Pentane",
+                "Description": "Haz-Map\u00ae is an occupational health database designed for health and safety professionals and for consumers seeking information about the adverse effects of workplace exposures to chemical and biological agents.",
+                "URL": "https://haz-map.com/Agents/107",
+                "LicenseNote": "Copyright (c) 2022 Haz-Map(R). All rights reserved.\nUnless otherwise indicated, all materials from Haz-Map are copyrighted by Haz-Map(R). No part of these materials, either text or image may be used for any purpose other than for personal use. Therefore, reproduction, modification, storage in a retrieval system or retransmission, in any form or by any means, electronic, mechanical or otherwise, for reasons other than personal use, is strictly prohibited without prior written permission.",
+                "LicenseURL": "https://haz-map.com/About",
+                "ANID": 17275951
+            },
+            {
+                "ReferenceNumber": 107,
+                "SourceName": "Toxin and Toxin Target Database (T3DB)",
+                "SourceID": "Compound::T3D3428",
+                "Name": "Pentane",
+                "Description": "The Toxin and Toxin Target Database (T3DB), or, soon to be referred as, the Toxic Exposome Database, is a unique bioinformatics resource that combines detailed toxin data with comprehensive toxin target information.",
+                "URL": "http://www.t3db.ca/toxins/T3D3428",
+                "LicenseNote": "T3DB is offered to the public as a freely available resource. Use and re-distribution of the data, in whole or in part, for commercial purposes requires explicit permission of the authors and explicit acknowledgment of the source material (T3DB) and the original publication.",
+                "LicenseURL": "http://www.t3db.ca/downloads",
+                "ANID": 20442927
+            }
+        ]
+    }
+}
