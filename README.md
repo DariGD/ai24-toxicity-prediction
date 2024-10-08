@@ -11,9 +11,6 @@
 |                            | Телеграм       | GitHub             |
 | -------------------------- | -------------- | ------------------ |
 | Гайдукова Дарья Дмитриевна | @darigd        | DariGD             |
-| Говорова Арина             | @arinagovorova | ArinaGovorova      |
-| Конов Юрий Сергеевич       | @Yury2K        | psaw               |
-| Филиппов Илья Михайлович   | @Final_Core    | Neuralist88        |
 | Токарев Владислав Павлович | @Vladislav_T02 | VladislavTokarev02 |
 | Бугров Артем (куратор)     | @temofeychenko | bugor40            |
 
