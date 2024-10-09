@@ -10,6 +10,7 @@
 
 |                            | Телеграм       | GitHub             |
 | -------------------------- | -------------- | ------------------ |
+| Ядыкин Данил Андреевич     | @kikongoro     | Kikongo            |
 | Гайдукова Дарья Дмитриевна | @darigd        | DariGD             |
 | Токарев Владислав Павлович | @Vladislav_T02 | VladislavTokarev02 |
 | Бугров Артем (куратор)     | @temofeychenko | bugor40            |
@@ -26,4 +27,4 @@
 
 Подробнее план см. в [checkpoints.md](checkpoints.md)
 
-Описание процесса Команды 22 см. в [docs/workflow/REAMDE.md](docs/workflow/REAMDE.md)
+Описание процесса Команды 86 см. в [docs/workflow/REAMDE.md](docs/workflow/REAMDE.md)
