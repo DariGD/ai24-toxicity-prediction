@@ -1,4 +1,4 @@
-# Процесс работы Команды 22
+# Процесс работы Команды 86
 
 > Отжатая и адаптированная версия [The Data Science Lifecycle Process](https://github.com/dslp/dslp/blob/main/README.md)
 
