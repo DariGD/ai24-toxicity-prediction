@@ -52,7 +52,7 @@ def get_toxicity_data_value(json_response):
     '''
     Extracts value from JSON response.
     Usually the value is located at
-    `.Record.Section[0].Section[0].Section[0].Information[0].Value.StringWithMarkup[0].String`
+    ".Record.Section[0].Section[0].Section[0].Information[0].Value.StringWithMarkup[0].String"
     of the response JSON.
     :param
         json_response: JSON response from PUG_VIEW API
@@ -62,6 +62,37 @@ def get_toxicity_data_value(json_response):
     return json_response["Record"]["Section"][0]["Section"][0][
         "Section"
     ][0]["Information"][0]["Value"]["StringWithMarkup"][0]["String"]
+
+
+def find_string_elements(json_data,
+                         patterns=["ld50", "ldlo", "lc50", "td50", "bcf"]):
+    '''
+    Находит все элементы с ключом "String",
+    значения которых содержат шаблоны поиска.
+    Args:
+        json_data: JSON-данные для анализа.
+        patterns: Список шаблонов для поиска.
+            По умолчанию: ["ld50", "ldlo", "lc50", "td50", "bcf"]
+    Returns:
+        list: Список элементов, удовлетворяющих условию.
+    '''
+    results = []
+
+    def search(data):
+        if isinstance(data, dict):
+            for key, value in data.items():
+                if key == "String" and any(
+                        pattern in value.lower() for pattern in patterns
+                        ):
+                    results.append(value)
+                elif isinstance(value, (dict, list)):
+                    search(value)
+        elif isinstance(data, list):
+            for item in data:
+                search(item)
+
+    search(json_data)
+    return results
 
 
 if __name__ == "__main__":
