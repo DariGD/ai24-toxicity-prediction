@@ -29,4 +29,7 @@
 
 Подробнее план см. в [checkpoints.md](checkpoints.md)
 
-Описание процесса Команды 22 см. в [docs/workflow/REAMDE.md](docs/workflow/REAMDE.md)
+## Дополнительно
+- Описание процесса Команды 22 см. в [docs/workflow/REAMDE.md](docs/workflow/REAMDE.md)
+
+- Как использвоать Object Storage в проекте см. в [docs/code/s3-instructions.md](docs/code/s3-instructions.md) 
