@@ -4,6 +4,7 @@ import os
 from datasets.pubchem import pubchem as pc
 import pandas as pd
 import argparse
+import logging
 
 
 parser = argparse.ArgumentParser()
@@ -53,18 +54,22 @@ for index, row in toxicity_data.loc[start:stop].iterrows():
         f"{index}/{stop}: cid={row['cid']}, code={row['status_code']}, \
             version={row['version']} =========="
     )
-    if row["status_code"] == 200:  # повторные проходы
-        if row["version"] in ["0.1.0", "0.1.2"]:
-            print("  Повтор. Code=200, v0.1.0/0.1.2 ... continue")
+    if row["status_code"] == 200 and row["version"] != "0.1.0":
+        # повторный проход по существующим записям
+        if row["version"] in ["0.1.2"]:
+            print("  Повтор. Code=200, v0.1.2 ... continue")
             continue
-        elif row["version"] == "0.1.1":
+        elif row["version"] in ["0.1.1"]:
             # разбор поля Toxicity_data_info и повышение версии строки
             print("  Повтор. Code=200, v0.1.1 ... upgrading to 0.1.2")
             r = eval(toxicity_data.at[index, "toxicity_data_info"])
             toxicity_data.at[index, "toxicity_data_value"] = \
                 pc.find_string_elements(r)
             toxicity_data.at[index, "version"] = "0.1.2"
+        else:
+            logging.error(f"  Unknown version: {row['version']}")
     else:
+        # если ранее не успех ИЛИ версия строки 0.1.0, то грузим новые данные
         try:
             print(f"  Loading new data for CID {row['cid']}")
             res = pc.get_toxicity_data(row["cid"], full_toxicity_data=True)
@@ -82,7 +87,7 @@ for index, row in toxicity_data.loc[start:stop].iterrows():
             toxicity_data.at[index, "toxicity_data_info"] = None
             toxicity_data.at[index, "toxicity_data_value"] = None
             print(f"ERROR: {index}/{stop}: cid={row['cid']}: {e}")
-    if index % 5000 == 0:
+    if index % 10000 == 0:
         # сохраняем промежуточные файлы через каждые 5000 строк
         toxicity_data.to_csv(
             f"{save_path}toxicity_data_index-0.1.2-{index}.csv",
