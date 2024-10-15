@@ -61,7 +61,8 @@ for index, row in toxicity_data.loc[start:stop].iterrows():
             # разбор поля Toxicity_data_info и повышение версии строки
             print("  Повтор. Code=200, v0.1.1 ... upgrading to 0.1.2")
             r = eval(toxicity_data.at[index, "toxicity_data_info"])
-            toxicity_data.at[index, "toxicity_data_value"] = pc.find_string_elements(r)
+            toxicity_data.at[index, "toxicity_data_value"] = \
+                pc.find_string_elements(r)
             toxicity_data.at[index, "version"] = "0.1.2"
     else:
         try:
@@ -82,12 +83,18 @@ for index, row in toxicity_data.loc[start:stop].iterrows():
             toxicity_data.at[index, "toxicity_data_value"] = None
             print(f"ERROR: {index}/{stop}: cid={row['cid']}: {e}")
     if index % 5000 == 0:
+        # сохраняем промежуточные файлы через каждые 5000 строк
         toxicity_data.to_csv(
-            f"{save_path}toxicity_data_index-0.1.2-{index}.csv", index=False
+            f"{save_path}toxicity_data_index-0.1.2-{index}.csv",
+            index=False
         )
         print(f"SAVED: {index}/{stop}: cid={row['cid']}")
 
-toxicity_data.to_csv(f"{save_path}toxicity_data_index-0.1.2-{index}.csv", index=False)
+# сохраняем последний файл
+toxicity_data.to_csv(
+    f"{save_path}toxicity_data_index-0.1.2-{index}.csv",
+    index=False
+)
 
 if args.upload:
     print("Uploading files to S3...")

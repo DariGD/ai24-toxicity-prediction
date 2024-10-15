@@ -1,19 +1,9 @@
 # Module 'pubchem'
 # Utilities to collect data from PubChem APIs
 
-import pprint
-import json
-import boto3.session
 import httpx
-import boto3
-import logging
-from botocore.exceptions import ClientError
-import os
-from tqdm import tqdm
-from boto3.s3.transfer import TransferConfig
+from datasets.utils import upload_file, download_file
 
-
-logger = logging.getLogger()
 
 base_PUG_REST = "https://pubchem.ncbi.nlm.nih.gov/rest/pug"
 base_PUG_VIEW = "https://pubchem.ncbi.nlm.nih.gov/rest/pug_view"
@@ -74,7 +64,8 @@ def get_toxicity_data_value(json_response):
 
 
 def find_string_elements(
-        json_data, patterns=["ld50", "ldlo", "lc50", "td50", "bcf"]):
+        json_data, patterns=["ld50", "ldlo", "lc50", "td50", "bcf"]
+):
     """
     Находит все элементы с ключом "String",
     значения которых содержат шаблоны поиска.
@@ -104,84 +95,8 @@ def find_string_elements(
     return results
 
 
-class ProgressPercentage(object):
-    def __init__(self, filename):
-        self._filename = filename
-        self._size = float(os.path.getsize(filename))
-        self._seen_so_far = 0
-        self._pbar = tqdm(total=self._size, unit='B', unit_scale=True, desc=filename)
-
-    def __call__(self, bytes_amount):
-        # To simplify, assume this is hooked up to a single filename
-        self._seen_so_far += bytes_amount
-        self._pbar.update(bytes_amount)
-
-
-def hse_s3_client():
-    """
-    Создает клиент для работы с S3.
-    Используется профиль "hse-ai24-team22" и регион "ru-central1".
-    Профиль "hse-ai24-team22" должен быть создан в файле ~/.aws/credentials.
-    Пример:
-        [hse-ai24-team22]
-        aws_access_key_id = ************************
-        aws_secret_access_key = **************************************
-    """
-    session = boto3.session.Session(
-        profile_name="hse-ai24-team22", region_name="ru-central1"
-    )
-    s3 = session.client(
-        service_name="s3", endpoint_url="https://storage.yandexcloud.net"
-    )
-    return s3
-
-
-def upload_file(file_name, object_name=None, bucket="hse-ai24-team-22-data", progress=False):
-    """
-    Загружает файл в S3.
-    Args:
-        file_name: Имя файла.
-        object_name: Ключ в S3. Если не задан, то имя файла (без пути) будет ключом.
-        bucket: Бакет. По умолчанию: "hse-ai24-team-22-data".
-        progress: Отображать прогресс. По умолчанию: False.
-    Returns:
-        True если успешно, иначе False.
-    """
-
-    if object_name is None:
-        object_name = os.path.basename(file_name)
-
-    s3 = hse_s3_client()
-    try:
-        s3.upload_file(file_name, bucket, object_name,
-                Callback=ProgressPercentage(file_name) if progress else None)
-    except ClientError as e:
-        logging.error(e)
-        return False
-    return True
-
-
-def download_file(object_name, file_name=None, bucket="hse-ai24-team-22-data", progress=False):
-    """
-    Скачивает файл из S3.
-    Args:
-        object_name: Ключ в S3.
-        file_name: Имя файла для сохранения. Если не задано, то будет "./{object_name}"
-        bucket: Бакет. По умолчанию: "hse-ai24-team-22-data".
-    """
-
-    if file_name is None:
-        file_name = os.path.join("./", object_name)
-
-    s3 = hse_s3_client()
-    try:
-        s3.download_file(bucket, object_name, file_name, Callback=ProgressPercentage(file_name) if progress else None)
-    except ClientError as e:
-        logging.error(e)
-        return False
-    return True
-
-
+# Тут разные эксперименты для отладки.
+# При импорте как модуль, код ниже не исполняется
 if __name__ == "__main__":
     # smiles = input("Smiles: ")
     # cid = smiles_to_cid(smiles)
@@ -191,9 +106,17 @@ if __name__ == "__main__":
     # pprint.pp(toxicity_data)
     # pprint.pp(get_toxicity_data_value(toxicity_data))
 
-    upload_file("toxicity.json", "data/toxicity.json", progress=True)
+    upload_file(
+        "toxicity.json",  # путь к файлу на локальной машине
+        "data/toxicity.json",  # ключ - т.е. имя записываемого объекта в S3
+        progress=True  # отображать прогресс
+    )
 
-    download_file("data/toxicity.json", "toxicity_downloaded.json", progress=True)
+    download_file(
+        "data/toxicity.json",  # ключ - т.е. имя считываемого объекта в S3
+        "toxicity_downloaded.json",  # путь к файлу на локальной машине
+        progress=True  # отображать прогресс
+    )
 
     # Получить список объектов в бакете
     # for key in s3.list_objects(Bucket='bucket-name')['Contents']:
