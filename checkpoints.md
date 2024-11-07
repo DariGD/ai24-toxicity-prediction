@@ -156,4 +156,4 @@
 Влад:  https://github.com/DariGD/ai24-toxicity-prediction/blob/EDA_dataset/EDA_tox_prediction.ipynb
 
 
-Данил:
+Данил: https://github.com/DariGD/ai24-toxicity-prediction/blob/tox_EDA/notebooks/EDA.ipynb
