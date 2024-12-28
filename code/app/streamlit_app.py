@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from model import *
 import seaborn as sns
+import httpx
+import pickle
 
 st.title("Data analysis with streamlit")
 st.header("1 step: upload file")
@@ -63,13 +65,27 @@ if uploaded_file is not None:
     st.header("Шаг 3: Кодировка и масштабирование признаков")
     X = df.drop(['LD50'], axis=1)
     y = df['LD50']
+    num_col = X.select_dtypes(include=['number']).columns.tolist()
+    cat_col = X.select_dtypes(include=['object']).columns.tolist()
+    X_cat = X[cat_col]
+    X_num = X[num_col]
 
     if st.checkbox("Применение OHE кодирования"):
+        OHE = OneHotEncoder(sparse_output=False, handle_unknown='ignore', drop = 'first')  # handle_unknown='ignore' для новых категорий в тесте
+        X_encoded = OHE.fit_transform(X_cat)
+        ohe_columns = OHE.get_feature_names_out(cat_col)
+        X_cat = pd.DataFrame(X_encoded, columns=ohe_columns, index=X.index)
+        
+        X = pd.concat([X_cat, X_num], axis=1)
         X = OHE_encode(X)
         st.dataframe(X.head(5))
     
     if st.checkbox("Масштабирование данных при помощи MinMaxScaler"):
-        X = scale_num(X)
+        scaler = MinMaxScaler()
+        X_num = scaler.fit_transform(X[num_col])
+        X_num = pd.DataFrame(X_num, columns=num_col, index=X.index)
+
+        X = pd.concat([X_cat, X_num], axis=1)
         st.dataframe(X.head(5))
 
 # Обучение модели
@@ -111,4 +127,11 @@ if uploaded_file is not None:
             st.pyplot(fig)
 
         if st.button("Cохранить модель"):
+            model_pipeline = Pipeline(
+                steps=[("scaler", scaler),
+                       ("encoder", OHE),
+                    ("feature_selector", PCA(n_components=0.95)),
+                    ("model", LinearRegression())])
+            
+            r = httpx.post('http://127.0.0.1:8000/save', data=model_pipeline)
             st.write('Модель сохранена')

@@ -11,8 +11,7 @@ Original file is located at
 
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List
-import pickle
+from typing import List, Any
 
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
@@ -21,24 +20,32 @@ import pandas as pd
 from rdkit import Chem
 from rdkit.Chem import AllChem
 import joblib
-import uvicorn
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from http import HTTPStatus
 from typing import Dict, List, Union
 from sklearn.linear_model import LinearRegression
-import numpy as np
 import joblib
 import os
-from fastapi import FastAPI, UploadFile, File, Body
+from fastapi import FastAPI, UploadFile, Request, File, Body
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List
-import numpy as np
 import pandas as pd
 import json
+import pickle
+import time
 from rdkit.Chem import MACCSkeys
 from rdkit.Chem import Descriptors
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+from sklearn.linear_model import LinearRegression
+from sklearn.decomposition import PCA
+from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.decomposition import TruncatedSVD
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.model_selection import train_test_split
+import io
+from fastapi.responses import StreamingResponse
 
 def smiles_to_2d_descriptors(smiles):
     # Преобразование SMILES в молекулу
@@ -59,9 +66,19 @@ def smiles_to_2d_descriptors(smiles):
 
 app = FastAPI()
 
-model_pipeline = joblib.load("pipeline_model.pkl")
-dd = pd.read_excel("Расшифровка MACCS.xlsx")
+set_model = None
+models = []
+default_model = joblib.load("pipeline_model.pkl")
+dd = pd.read_excel("MACCSname.xlsx")
 
+# Добавим дефолтную модель в общий список
+model = {}
+model['id'] = 'Default_model'
+model['Scaler'] = "MinMaxScaler"
+model['Encoder'] = "OHE"
+model['Feature_Selector'] = "PCA"
+model['pipeline'] = default_model 
+models.append(model)
 
 class InputData(BaseModel):
     Exp_animal: Literal['mouse', 'rat'] = Field(..., example='mouse')
@@ -70,8 +87,26 @@ class InputData(BaseModel):
                                       'intramuscular', 'diet'] = Field(..., example='oral')
     Smiles: Annotated[str, Field(..., example='CCO')]  # Изменено на Smiles
 
+class ModelData(BaseModel):
+    id: Union[str, None] = 'pipeline_model'
+    Scaler: Union[str, None] = "MinMaxScaler"
+    Encoder: Union[str, None] = "OneHotEncoder"
+    Feature_Selector: Union[str, None] = "PCA"
+
 class PredictionResponse(BaseModel):
     prediction: Annotated[float, Field(description="Prediction results")]
+
+class SaveResponse(BaseModel):
+    response: Annotated[str, Field(description="Result")]
+
+class SetResponse(BaseModel):
+    response: Annotated[str, Field(description="Выбранная модель")]
+
+class ModelListResponse(BaseModel):
+    models: List[Dict]
+
+class FitResponse(BaseModel):
+    response: Annotated[str, Field(description="Result")]
 
 class InfoResponse(BaseModel):
     length_of_categorical_columns: int = 2
@@ -109,8 +144,70 @@ def smiles_to_descriptors(smiles: str):
     # Объединяем дескрипторы
     return descriptors_2d_df, maccs_df, morgan_df  # Возвращаем дескрипторы Морган и MACCS, 2d
 
-@app.post("/predict", response_model=PredictionResponse)
-def predict(input_data: Annotated[InputData, Body(...)]) -> PredictionResponse:
+@app.post("/fit", response_model=FitResponse)
+async def fit_model(file: UploadFile = File(...)) -> FitResponse: 
+    start_time = time.time()  # Начало отсчета времени
+    try:
+        content = await file.read()
+        df = pd.read_csv(io.BytesIO(content))
+        X = df.drop(columns=['LD50', 'log_LD50'])
+        y = df['log_LD50']
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, shuffle=True, random_state=123)
+
+        # Разделение на числовые и категориальные признаки
+        num_col = X.select_dtypes(include=['number']).columns.tolist()
+        cat_col = X.select_dtypes(include=['object']).columns.tolist()
+
+        # Создание пайплайнов для преобразования данных
+        numerical_transformer = Pipeline(steps=[
+            ("scaler", MinMaxScaler()),
+        ])
+
+        categorical_transformer = Pipeline(steps=[
+            ("onehot", OneHotEncoder(handle_unknown="ignore", drop='first')),
+        ])
+
+        data_transformer = ColumnTransformer(transformers=[
+            ("numerical", numerical_transformer, num_col),
+            ("categorical", categorical_transformer, cat_col),
+        ])
+
+        preprocessor = Pipeline(steps=[("data_transformer", data_transformer)])
+
+        # Создание полного пайплайна модели
+        model_pipeline = Pipeline(
+            steps=[("preprocessor", preprocessor),
+                   ("feature_selector", PCA(n_components=0.95)),
+                   ("model", LinearRegression())])
+
+        # Обучение модели
+        model_pipeline.fit(X_train, y_train)
+
+        # Cохраняем модель
+        n = len(models) + 1
+        new_model = {}
+        new_model['id'] = f"Model{n}"
+        new_model['Scaler'] = "MinMaxScaler"
+        new_model['Encoder'] = "OHE"
+        new_model['Feature_Selector'] = "PCA"
+        new_model['pipeline'] = model_pipeline
+        models.append(new_model)
+
+        elapsed_time = time.time() - start_time  # Время выполнения
+
+        if elapsed_time > 10:
+            response = "Модель обучается больше 10 секунд"
+            return FitResponse(response=response)
+            
+        response = "Модель обучилась"
+        return FitResponse(response=response)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error occurred during fitting: {str(e)}")
+
+
+@app.post("/predict_smile", response_model=PredictionResponse)
+def predict_smile(input_data: Annotated[InputData, Body(...)]) -> PredictionResponse:
     data = input_data.model_dump()
     df = pd.DataFrame(data, index=[0])
     df['Exp. Animal'] = df['Exp_animal']
@@ -123,6 +220,43 @@ def predict(input_data: Annotated[InputData, Body(...)]) -> PredictionResponse:
     del X['Smiles']
 
     # Делаем предсказание
+    # Используем выбранную модель. Если модель не выбрана, используем дефолтную
+    model_pipeline = default_model
+    if set_model is not None:
+        model_pipeline = set_model
     prediction = model_pipeline.predict(X)
 
     return PredictionResponse(prediction=prediction[0])
+
+@app.post("/save", response_model=SaveResponse)
+async def save(input_data: Annotated[ModelData, Body(...)]) -> SaveResponse:
+    data = input_data.model_dump()
+    model_pipeline = joblib.load(f"{data['id']}.pkl")
+    data['pipeline'] = model_pipeline
+    models.append(data)
+    response = "Model saved"
+
+    return SaveResponse(response=response)
+
+@app.post("/set", response_model=SetResponse)
+async def set(id: str = 'pipeline_model') -> SetResponse:
+    global set_model
+    for model in models:
+        if model['id'] == id:
+            set_model = model['pipeline']    
+            response = id
+        else:
+            response = model['id']
+
+    return SetResponse(response=response)
+
+@app.get("/list_models", response_model=ModelListResponse)
+async def list_models():
+    models_response = []
+    for model in models:
+        response = {'id': model['id'],
+                    'scaler': model['Scaler'],
+                    'encoder': model['Encoder'],
+                    'feature_selector': model['Feature_Selector']}
+        models_response.append(response)
+    return ModelListResponse(models=models_response)
