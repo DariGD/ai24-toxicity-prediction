@@ -226,13 +226,12 @@ async def save(input_data: Annotated[ModelData, Body(...)]) -> SaveResponse:
 @app.post("/set", response_model=SetResponse)
 async def set(id: str = 'pipeline_model') -> SetResponse:
     global set_model
+    response = models[0]['id']
     for model in models:
         if model['id'] == id:
             set_model = model['pipeline']    
             response = id
-        else:
-            response = model['id']
-
+            
     return SetResponse(response=response)
 
 @app.get("/list_models", response_model=ModelListResponse)
