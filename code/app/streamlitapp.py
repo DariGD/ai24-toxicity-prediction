@@ -631,7 +631,7 @@ st.header("Обучение модели")
 uploaded_file = st.file_uploader("Выберите CSV файл", type=["csv"])
 
 if uploaded_file is not None:
-    if st.button("Обучить модель"):
+    if st.button("Обучение модели"):
         files = {"file": uploaded_file}
         response = requests.post(f"{API_URL}/fit", files=files)
         st.success(response.json().get("response"))
