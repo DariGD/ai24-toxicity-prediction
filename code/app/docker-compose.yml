@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  backend:
+    image: gaydukovadd/backend:latest  # Имя образа на Docker Hub
+    ports:
+      - "8001:8000"
+    networks:
+      - app-network
+    command: uvicorn fastAPI:app --host 0.0.0.0 --port 8000  # Запуск FastAPI с Uvicorn
+
+  frontend:
+    image: gaydukovadd/frontend:latest  # Имя образа на Docker Hub
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+networks:
+  app-network:
+    driver: bridge
+
+
+
