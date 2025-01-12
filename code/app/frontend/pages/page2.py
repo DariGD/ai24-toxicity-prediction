@@ -1,11 +1,11 @@
 import streamlit as st
-from pages.scaler_split import preprocess_data
-from pages.trainingmodel import display_model_results
-from pages.pca import run_pca_and_model, save_model
-from pages.svd import  run_svd_and_model, save_model_svd
-from pages.SelectKbest import  run_select_kbest_and_model, save_model_skb
-from pages.logger import setup_logger
-from pages.grid_search import perform_grid_search
+from functions.scaler_split import preprocess_data
+from functions.trainingmodel import display_model_results
+from functions.pca import run_pca_and_model, save_model
+from functions.svd import  run_svd_and_model, save_model_svd
+from functions.SelectKbest import  run_select_kbest_and_model, save_model_skb
+from logger import setup_logger
+from functions.grid_search import perform_grid_search
 
 @ st.cache_data
 def run():
