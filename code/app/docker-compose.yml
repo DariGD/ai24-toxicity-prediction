@@ -12,7 +12,7 @@ services:
   frontend:
     image: gaydukovadd/frontend:latest  # Имя образа на Docker Hub
     ports:
-      - "3000:3000"
+      - "8501:3000"
     networks:
       - app-network
     depends_on:
