@@ -1,6 +1,6 @@
 import streamlit as st
-from pages.api_client import train_model, predict_smile, save_model, set_model, list_models
-from pages.logger import setup_logger
+from functions.api_client import train_model, predict_smile, save_model, set_model, list_models
+from functions.logger import setup_logger
 
 def run():
     logger = setup_logger(name="StreamlitApp")
