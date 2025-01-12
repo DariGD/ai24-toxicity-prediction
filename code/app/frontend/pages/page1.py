@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from pages.preprocessdata import preprocess_dataset, drop_constant_columns, analyze_ld50
-from pages.logger import setup_logger
+from functions.preprocessdata import preprocess_dataset, drop_constant_columns, analyze_ld50
+from logger import setup_logger
 
 def run():
     logger = setup_logger(name="StreamlitApp")
