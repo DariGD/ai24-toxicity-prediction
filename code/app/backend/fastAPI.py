@@ -31,6 +31,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 import io
+from logger import setup_logger
 
 def smiles_to_2d_descriptors(smiles):
     # Преобразование SMILES в молекулу
@@ -130,7 +131,9 @@ def smiles_to_descriptors(smiles: str):
     return descriptors_2d_df, maccs_df, morgan_df  # Возвращаем дескрипторы Морган и MACCS, 2d
 
 @app.post("/fit", response_model=FitResponse)
-async def fit_model(file: UploadFile = File(...)) -> FitResponse: 
+async def fit_model(file: UploadFile = File(...)) -> FitResponse:
+    logger = setup_logger(name="FastAPI")
+
     start_time = time.time()  # Начало отсчета времени
     try:
         content = await file.read()
@@ -185,6 +188,8 @@ async def fit_model(file: UploadFile = File(...)) -> FitResponse:
             return FitResponse(response=response)
             
         response = "Модель обучилась"
+        logger.info("Обучена модель линейной регрессии")
+
         return FitResponse(response=response)
 
     except Exception as e:
@@ -193,6 +198,8 @@ async def fit_model(file: UploadFile = File(...)) -> FitResponse:
 
 @app.post("/predict_smile", response_model=PredictionResponse)
 def predict_smile(input_data: Annotated[InputData, Body(...)]) -> PredictionResponse:
+    logger = setup_logger(name="FastAPI")
+
     data = input_data.model_dump()
     df = pd.DataFrame(data, index=[0])
     df['Exp. Animal'] = df['Exp_animal']
@@ -211,20 +218,27 @@ def predict_smile(input_data: Annotated[InputData, Body(...)]) -> PredictionResp
         model_pipeline = set_model
     prediction = model_pipeline.predict(X)
 
+    logger.info(f"Модель предсказала значение токсичности")
     return PredictionResponse(prediction=prediction[0])
 
 @app.post("/save", response_model=SaveResponse)
 async def save(input_data: Annotated[ModelData, Body(...)]) -> SaveResponse:
+    logger = setup_logger(name="FastAPI")
+
     data = input_data.model_dump()
     model_pipeline = joblib.load(f"{data['id']}.pkl")
     data['pipeline'] = model_pipeline
     models.append(data)
     response = "Model saved"
+    
+    logger.info(f"Модель сохранена")
 
     return SaveResponse(response=response)
 
 @app.post("/set", response_model=SetResponse)
 async def set(id: str = 'pipeline_model') -> SetResponse:
+    logger = setup_logger(name="FastAPI")
+
     global set_model
     response = models[0]['id']
     for model in models:
@@ -236,6 +250,8 @@ async def set(id: str = 'pipeline_model') -> SetResponse:
 
 @app.get("/list_models", response_model=ModelListResponse)
 async def list_models():
+    logger = setup_logger(name="FastAPI")
+
     models_response = []
     for model in models:
         response = {'id': model['id'],
@@ -243,4 +259,8 @@ async def list_models():
                     'encoder': model['Encoder'],
                     'feature_selector': model['Feature_Selector']}
         models_response.append(response)
+
+    logger.info(f"Список моделей получен")
+
+
     return ModelListResponse(models=models_response)
